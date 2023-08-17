@@ -33,9 +33,9 @@ Calculate the bandwidth for kernel density estimation (KDE) using various method
 
 - `m`:     `matrix`, Input data as a column vector
 - `method`:  `string`, Method for bandwidth selection. Supported values: "scott" or "silverman".
-- `df`: bool, Indicator for degrees of freedom correction. 0 not to correct, 1 to correct.
-- `skip_na`: `bool`, Indicator for skipping missing values. 0 to include missing values, 1 to remove them.
-- `verbose`: `bool`, Indicator for printing bandwidth selection results. 0 to disable, 1 to enable.
+- `df`: bool, Indicator for degrees of freedom correction. 0 not to correct, 1 to correct (default).
+- `skip_na`: `bool`, Indicator for skipping missing values. 0 to include missing values, 1 to remove them (default).
+- `verbose`: `bool`, Indicator for printing bandwidth selection results. 0 to disable (default), 1 to enable.
 
 ## Returns
 
