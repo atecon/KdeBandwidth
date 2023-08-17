@@ -1,12 +1,30 @@
 clear
 set verbose off
 include KdeBandwidth.gfn
+set seed 1234
+
+matrix mdata = mrandgen(G, 1, 1, 100, 1)  # Input data as a column vector
+
+# As simple as possible
+scalar bw_silverman = kde_bandwidth(mdata, "silverman")
+print bw_silverman
+
+# Parametrized
+string method = "scott"  # Bandwidth selection method
+scalar df = TRUE  # Degrees of freedom correction
+scalar skip_na = TRUE  # Skip missing values
+scalar verbose = TRUE  # Print bandwidth selection results
+scalar bw_scott = kde_bandwidth(mdata, method, df, skip_na, verbose)
 
 
-m = {1, 2, 3, 4, 5}'  # Input data as a column vector
-method = "silverman"  # Bandwidth selection method
-df = 1  # Degrees of freedom correction
-skip_na = 1  # Skip missing values
-verbose = 1  # Print bandwidth selection results
-bandwidth = kde_bandwidth(m, method, df, skip_na, verbose)
+# Comparison
+matrix d = kdensity(mdata, 1) ~ kdensity(mdata, 1, bw_scott) ~ \
+           kdensity(mdata, 1, bw_silverman)
+strings clabels = defarray("abscissae", "default", "abscissae", "scott",
+                           "abscissae", "silverman")
+cnameset(d, clabels)
+string title = sprintf("Epanechnikov kernel with optimal h (Scott = %.3f, Silverman = %.3f)", bw_scott, bw_silverman)
 
+freq --matrix=mdata --plot=display # Frequency plot of simulated data
+gnuplot 2 4 6 1 --matrix=d --with-lines --fit=none --output=display \
+  {set title '@title'; set key top right; }
