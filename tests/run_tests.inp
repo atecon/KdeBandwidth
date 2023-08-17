@@ -1,0 +1,59 @@
+set verbose off
+clear
+
+include assertion.gfn
+set assert stop
+
+include "./src/KdeBandwidth.inp" --force
+
+
+bundles Params = null
+Params = Params + _(m = {1, NA, 3}', expected = {1, 3}')
+Params = Params + _(m = {1, 2, 3}', expected = {1, 2, 3}')
+
+function void test_remove_nas (const bundles P)
+    print "Start testing function remove_nas()."
+
+    loop foreach i P
+        # Given + when
+        matrix actual = remove_nas(P[i].m)
+
+        # Then
+        assert(rows(actual) == rows(P[i].expected))
+        loop idx=1..rows(P[i].expected)
+            assert(actual[idx] == P[i].expected[idx])
+        endloop
+    endloop
+end function
+test_remove_nas(Params)
+
+
+bandwidth_print("scott", TRUE, TRUE, 1)
+bandwidth_print("scott", FALSE, TRUE, 1)
+bandwidth_print("scott", FALSE, FALSE, 1)
+bandwidth_print("scott", FALSE, TRUE, 1)
+
+
+function void test_silverman (void)
+    print "Start testing function kde_bandwidth() for Silverman method"
+
+    # Given
+    matrix mat = {1.2, 1.5, 1.7, 1.9, 2.1, 2.3, 2.5, 2.7, 2.9, 3.1}'
+    df_corr = FALSE
+
+    # When
+    scalar actual = kde_bandwidth(mat, "silverman", df_corr, null, FALSE)
+
+    # Then
+    assert_almost_equal_num(actual, 0.33542311989926)
+end function
+test_silverman()
+
+
+
+
+
+print "Successfully passed all tests."
+quit
+
+
