@@ -5,12 +5,16 @@ Calculate the bandwidth for kernel density estimation (KDE) for uni-variate data
 In practice, we do not know whether $X$ is normally distributed. If it is, then
 rule-of-thumb methods will return the optimal optimal bandwidth. If not, then method will compute a bandwidth not too far from the optimum if the distribution of $X$ is not too different from the normal distribution (the ``reference distribution''). The rule-of-thumb approach will give reasonable results for all distributions that are unimodal, fairly symmetric and do not have tails that are too fat. Both, Silverman's and Scott's methods, are easy to compute, but may yield widely inaccurate estimates when the density is not close to being normal.
 
+You may uses the rule-of-thumb methods for both the Gaussian or Epanechnikov
+kernel when calling gretl's `kdensity()` function.
+
 Please report bugs or comments on the gretl mailing list, write to
 atecon@posteo.de or report an issue on github
 (https://github.com/atecon/KdeBandwidt).
 
 
 # References
+
 - https://en.wikipedia.org/wiki/Kernel_density_estimation#A_rule-of-thumb_bandwidth_estimator
 - http://sfb649.wiwi.hu-berlin.de/fedc_homepage/xplore/ebooks/html/spm/spmhtmlnode15.html
 - D.W. Scott, “Multivariate Density Estimation: Theory, Practice, and Visualization”, John Wiley & Sons, New York, Chicester, 1992.
