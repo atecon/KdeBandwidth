@@ -10,9 +10,10 @@ function matrix remove_nas (const matrix y)
     return selifr(y, ok(y))
 end function
 
-function scalar kde_bandwidth (matrix m,
+
+function scalar kde_bandwidth (matrix input,
                                string method,
-                               const int df[0::1],
+                               const bool df_correction[0::1],
                                const int skip_na[0:1:1],
                                const int verbose[0:1:0])
     /*
@@ -20,11 +21,13 @@ function scalar kde_bandwidth (matrix m,
        various methods for uni-variate data only (at the moment).
 
        Parameters:
-       m (matrix): Input data as a column vector.
+       input (matrix): Input data as a column vector.
        method (string): Method for bandwidth selection. Supported values: "scott" or "silverman".
-       df (bool): Indicator for degrees of freedom correction. 0 not to correct, 1 to correct.
+       df_correction (bool): Indicator for degrees of freedom correction
+       when computing the standard devation. FALSE not to correct, TRUE to
+       correct.
        skip_na (bool): Indicator for skipping missing values. 0 to include missing values, 1 to remove them.
-       verbose (bool): Indicator for printing bandwidth selection results. 0 to disable, 1 to enable.
+       verbose (bool): Indicator for printing bandwidth selection results. FALSE to disable, TRUE to enable.
 
        Returns:
        scalar: The calculated bandwidth for KDE.
@@ -32,32 +35,24 @@ function scalar kde_bandwidth (matrix m,
        Raises:
        Error: If the input data has more than one column.
        Error: If an unsupported method of bandwidth selection is specified.
-
-       Example Usage:
-       m = {1, 2, 3, 4, 5}  # Input data as a column vector
-       method = "silverman"  # Bandwidth selection method
-       df = 1  # Degrees of freedom
-       skip_na = 1  # Skip missing values
-       verbose = 1  # Print bandwidth selection results
-       bandwidth = kde_bandwidth(m, method, df, skip_na, verbose)
     */
 
     string method = tolower(method)
-    errorif(cols(m) > 1, "Only column vector is supported")
-    matrix m = skip_na == TRUE ? remove_nas(m) : m
-    scalar n = rows(m)
-    scalar std_dev = sdc(m, df)
+    errorif(cols(input) > 1, "Only column vector is supported")
+    matrix input = skip_na == TRUE ? remove_nas(input) : input
+    scalar n = rows(input)
+    scalar std_dev = sdc(input, df_correction)
 
     if method == "scott"
-        scalar bandwidth = bandwidth_scott(m, std_dev, n)
+        scalar bandwidth = bandwidth_scott(std_dev, n)
     elif method == "silverman"
-        scalar bandwidth = bandwidth_silverman(m, std_dev, n)
+        scalar bandwidth = bandwidth_silverman(input, std_dev, n)
     else
         errorif(TRUE, "Unsupported method of bandwidth selection.")
     endif
 
     if verbose
-        bandwidth_print(method, df, skip_na, bandwidth)
+        bandwidth_print(method, df_correction, skip_na, bandwidth)
     endif
 
     return bandwidth
@@ -65,12 +60,12 @@ end function
 
 
 function void bandwidth_print (const string method,
-                               const int df[0::1],
+                               const int df_correction[0::1],
                                const int skip_na[0:1:1],
                                const scalar bandwidth)
     /* Print out results. */
 
-    string df_corr = df == TRUE ? "TRUE" : "FALSE"
+    string df_corr = df_correction == TRUE ? "TRUE" : "FALSE"
     string str_skip_na = skip_na == TRUE ? "TRUE" : "FALSE"
 
     printf("\n*** Bandwidth Selection Results ***\n")
@@ -81,13 +76,11 @@ function void bandwidth_print (const string method,
 end function
 
 
-function scalar bandwidth_scott (matrix y,
-                                 const scalar std_dev,
+function scalar bandwidth_scott (const scalar std_dev,
                                  const scalar n)
     /* Calculate the bandwidth for kernel density estimation (KDE) using Scott's rule.
 
     Parameters:
-    y (matrix): Input data as a column vector.
     std_dev (scalar): Standard deviation of the input data.
     n (scalar): Number of observations in the input data.
 
@@ -111,6 +104,7 @@ function scalar bandwidth_silverman (const matrix y,
 
     Returns:
     scalar: The calculated bandwidth for KDE using Silverman's rule. */
+
     scalar iqr = quantile(y, 0.75) - quantile(y, 0.25)
     matrix value = min(std_dev ~ (iqr / 1.34))
     scalar bandwidth = 0.9 * value * (n^(-0.2))

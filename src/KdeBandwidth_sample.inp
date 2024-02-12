@@ -11,10 +11,10 @@ print bw_silverman
 
 # Parametrized
 string method = "scott"  # Bandwidth selection method
-scalar df = TRUE  # Degrees of freedom correction
+scalar df_correction = TRUE  # Degrees of freedom correction
 scalar skip_na = TRUE  # Skip missing values
 scalar verbose = TRUE  # Print bandwidth selection results
-scalar bw_scott = kde_bandwidth(mdata, method, df, skip_na, verbose)
+scalar bw_scott = kde_bandwidth(mdata, method, df_correction, skip_na, verbose)
 
 
 # Comparison
