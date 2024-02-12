@@ -23,7 +23,7 @@ atecon@posteo.de or report an issue on github
 # Public function
 
 ```
-function scalar (matrix m, string method, const int df_correction[0::1], const int skip_na[0:1:1], const int verbose[0:1:0])
+function scalar (matrix input, string method, const int df_correction[0::1], const int skip_na[0:1:1], const int verbose[0:1:0])
 ```
 
 Calculate the bandwidth for kernel density estimation (KDE) using either Scott's or Silverman's method for uni-variate data only (at the moment).
