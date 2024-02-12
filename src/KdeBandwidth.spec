@@ -1,7 +1,7 @@
 author = Artur Tarassow
 email = atecon@posteo.de
 version = 0.1
-date = 2023-08-17
+date = 2024-02-12
 description = Optimal bandwidth for kernel density estimation
 tags = C14
 min-version = 2022a
